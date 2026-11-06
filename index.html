@@ -1,0 +1,399 @@
+<!Doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Unban WhatsApp — BudiKueren</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg:#05060a;
+  --accent:#06f6d7;
+  --accent2:#7c5cff;
+  --muted:#98a0b3;
+  --mono:'Share Tech Mono', monospace;
+  --ui:'Inter', system-ui, sans-serif;
+}
+html,body{ height:100%; margin:0; background:var(--bg); color:#e6eef6; font-family:var(--ui); -webkit-font-smoothing:antialiased }
+*{box-sizing:border-box}
+
+/* ===== TOPBAR ===== */
+.topbar{ display:flex; align-items:center; background:transparent; padding:8px 12px; }
+.menu-btn{ font-size:22px; background:none; border:none; color:var(--accent); cursor:pointer; margin-right:10px; }
+.title-top{ font-family:var(--mono); font-size:18px; font-weight:600; color:var(--accent); }
+
+/* ===== BANNER AJAKAN JOIN ===== */
+#joinBanner{
+  display:flex; align-items:center; gap:10px;
+  margin:8px 12px; padding:10px 12px;
+  background:linear-gradient(90deg, rgba(6,246,215,.08), rgba(124,92,255,.08));
+  border:1px solid rgba(6,246,215,.25);
+  border-radius:10px;
+  font-size:13px; color:#cfd8e3;
+}
+#joinBanner .jb-icon{ font-size:16px; }
+#joinBanner .jb-text{ flex:1; line-height:1.35; }
+#joinBanner .jb-join,
+#joinBanner .jb-share{
+  padding:7px 12px; border-radius:8px; font-size:13px;
+  font-weight:600; cursor:pointer; text-decoration:none;
+  white-space:nowrap; border:0;
+}
+#joinBanner .jb-join{ background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#041018; }
+#joinBanner .jb-share{ background:rgba(255,255,255,.06); color:#e6eef6; border:1px solid rgba(255,255,255,.12); }
+#joinBanner .jb-close{ background:none; border:0; color:#98a0b3; font-size:20px; line-height:1; cursor:pointer; padding:0 4px; }
+#joinBanner .jb-close:hover{ color:#fff; }
+@media (max-width:640px){
+  #joinBanner{ flex-wrap:wrap; }
+  #joinBanner .jb-text{ flex-basis:100%; }
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{ position:fixed; top:0; left:-240px; width:240px; height:100%; background:#0c1016; border-right:1px solid rgba(255,255,255,0.08); padding:60px 16px; transition:left 0.3s ease; z-index:999; overflow-y:auto; }
+.sidebar ul{ list-style:none; padding:0; margin:0; }
+.sidebar li{ margin-bottom:14px; }
+.sidebar a{ color:#e6eef6; text-decoration:none; font-size:15px; display:flex; align-items:center; padding:6px 4px; border-radius:6px; }
+.sidebar a i{ margin-right:8px; color:var(--accent); width:18px; text-align:center; }
+.sidebar a:hover{ background:rgba(255,255,255,0.05); }
+.sidebar.active{ left:0; }
+.submenu{ display:none; list-style:none; padding-left:20px; margin-top:8px; }
+.submenu li{ margin-bottom:10px; }
+.submenu a{ font-size:14px; color:#cfd8e3; }
+.submenu a i{ color:var(--accent); }
+.submenu.show{ display:block; }
+.overlay{ position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); display:none; z-index:998; }
+.overlay.active{ display:block; }
+
+/* ===== ROBOT / FORM ===== */
+.robot-box{
+  background:radial-gradient(circle at 30% 20%, rgba(124,92,255,0.06), transparent 20%),
+             linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+  border-radius:10px; padding:14px; margin:12px auto;
+  border:1px solid rgba(255,255,255,0.02); width:280px;
+}
+.robot-face{ width:120px; height:120px; border-radius:50%; background:#000; display:flex; align-items:center; justify-content:center; font-size:56px; margin:0 auto; box-shadow:0 0 15px rgba(0,0,0,0.6); overflow:hidden; }
+.robot-title-normal{ font-family:var(--ui); font-size:18px; font-weight:600; color:#e6eef6; text-align:center; margin-top:8px; }
+
+.form-label{ font-size:12px; font-weight:500; margin:12px auto 6px; display:block; text-align:left; width:280px; }
+.input, select, .btn{ width:280px; margin:0 auto; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:#071018; color:#7b8a97; font-size:14px; outline:none; display:block; }
+.input::placeholder{ color:#7b8a97; }
+.btn{ margin-top:18px; padding:12px 14px; background:linear-gradient(90deg,var(--accent),var(--accent2)); border:0; border-radius:10px; color:#041018; font-weight:800; cursor:pointer; font-size:15px; }
+.status{ margin:12px auto 0; font-size:13px; color:var(--muted); min-height:20px; width:280px; }
+.small{ font-size:12px; color:var(--muted); margin:6px auto 24px; width:280px; text-align:center; line-height:1.4; }
+
+@media (max-width:860px){
+  .sidebar{ width:200px; }
+  .robot-face{ height:100px; width:100px; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" id="menuToggle" aria-label="Buka menu">&#9776;</button>
+  <div class="title-top">Website Unband By BudiKueren</div>
+</header>
+
+<!-- BANNER AJAKAN JOIN (bisa ditutup) -->
+<div id="joinBanner" role="region" aria-label="Ajakan mengikuti channel WhatsApp">
+  <span class="jb-icon" aria-hidden="true">📢</span>
+  <span class="jb-text">Ikuti channel WhatsApp kami untuk info &amp; update terbaru.</span>
+  <a class="jb-join"
+     href="https://whatsapp.com/channel/0029VbDqp1jBA1ev6AG1xl2r"
+     target="_blank" rel="noopener">
+    Ikuti Channel
+  </a>
+  <button class="jb-share" id="jbShare" type="button">Bagikan</button>
+  <button class="jb-close" id="jbClose" type="button" aria-label="Tutup banner">&times;</button>
+</div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebarMenu" aria-hidden="true">
+  <ul>
+    <!-- CONTACT ADMIN -->
+    <li>
+      <a href="javascript:void(0)" id="contactToggle">
+        <i class="fa-solid fa-headset"></i> Contact Admin
+        <i class="fa-solid fa-chevron-down" style="margin-left:auto; font-size:12px;"></i>
+      </a>
+      <ul class="submenu" id="contactSubmenu">
+        <li><a href="https://wa.me/62895320838048" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
+        <li><a href="https://t.me/budi2012" target="_blank" rel="noopener"><i class="fa-brands fa-telegram"></i> Telegram</a></li>
+      </ul>
+    </li>
+
+    <!-- INFO WEBSITE TERBARU -->
+    <li>
+      <a href="javascript:void(0)" id="infoToggle">
+        <i class="fa-solid fa-newspaper"></i> Info Website Terbaru
+        <i class="fa-solid fa-chevron-down" style="margin-left:auto; font-size:12px;"></i>
+      </a>
+      <ul class="submenu" id="infoSubmenu">
+        <li><a href="https://whatsapp.com/channel/0029VbDqp1jBA1ev6AG1xl2r" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp Channel</a></li>
+      </ul>
+    </li>
+
+    <!-- JASA PEMBUATAN WEB -->
+    <li>
+      <a href="javascript:void(0)" id="jasaToggle">
+        <i class="fa-solid fa-code"></i> Jasa Pembuatan Web
+        <i class="fa-solid fa-chevron-down" style="margin-left:auto; font-size:12px;"></i>
+      </a>
+      <ul class="submenu" id="jasaSubmenu">
+        <li><a href="https://wa.me/62895320838048" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
+        <li><a href="https://t.me/budi2012" target="_blank" rel="noopener"><i class="fa-brands fa-telegram"></i> Telegram</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<div class="overlay" id="overlay" aria-hidden="true"></div>
+
+<!-- ROBOT -->
+<div class="robot-box">
+  <div class="robot-face">
+    <img src="https://i.imgur.com/sgIjNk8.jpeg" alt="Logo Robot"
+         style="max-height:100%; max-width:100%; border-radius:50%;">
+  </div>
+  <div class="robot-title-normal">Unban WhatsApp</div>
+</div>
+
+<!-- FORM -->
+<label class="form-label" for="nomor">Nomor WhatsApp yang kena masalah</label>
+<input type="tel" id="nomor" class="input" placeholder="+62xxxxxxxxxxx" inputmode="tel" aria-required="true" />
+
+<label class="form-label" for="alasan">Pilih Alasan</label>
+<select id="alasan" class="input" aria-required="true">
+  <option value="">-- Pilih alasan --</option>
+  <option value="Opsi Spam">Opsi Spam</option>
+  <option value="Opsi Permanen">Opsi Permanen</option>
+  <option value="Tidak Bisa Login">Tidak Bisa Login</option>
+</select>
+
+<button class="btn" id="sendBtn" aria-label="Buka Gmail untuk kirim banding">
+  KIRIM BANDING
+</button>
+
+<div class="status" id="statusArea" aria-live="polite"></div>
+<div class="small">
+  Saat tombol ditekan: sistem akan mencoba membuka aplikasi Gmail (Android).
+  Silahkan kirim pesannya lalu tunggu balasan WhatsApp.
+</div>
+
+<script>
+/* ===== Banner ajakan join ===== */
+(function(){
+  const banner = document.getElementById('joinBanner');
+  if(!banner) return;
+
+  if(localStorage.getItem('joinBannerClosed') === '1'){
+    banner.style.display = 'none';
+  }
+
+  document.getElementById('jbClose').addEventListener('click', () => {
+    banner.style.display = 'none';
+    localStorage.setItem('joinBannerClosed', '1');
+  });
+
+  document.getElementById('jbShare').addEventListener('click', async () => {
+    const siteUrl = location.href;
+    const data = { title: document.title, text: 'Cek halaman ini:', url: siteUrl };
+    try{
+      if(navigator.share){
+        await navigator.share(data);
+      } else {
+        await navigator.clipboard.writeText(siteUrl);
+        alert('Link halaman disalin. Tempel di chat untuk membagikan.');
+      }
+    }catch(err){ /* user batal */ }
+  });
+})();
+
+/* ===== Form: buka Gmail compose (nomor + alasan saja) ===== */
+const sendBtn      = document.getElementById('sendBtn');
+const statusEl     = document.getElementById('statusArea');
+const nomorInput   = document.getElementById('nomor');
+const alasanSelect = document.getElementById('alasan');
+
+function setStatus(t){ statusEl.textContent = t; }
+function enc(v){ return encodeURIComponent(v || ''); }
+function isAndroid(){ return /Android/i.test(navigator.userAgent); }
+
+function normalizeNumber(n){
+  if(!n) return n;
+  const s = n.trim().replace(/\s+/g,'');
+  if(/^0[0-9]+$/.test(s)) return '62' + s.slice(1);
+  return s;
+}
+
+function buildTemplate(nomor, alasan){
+  const tampilNomor = (nomor.startsWith('+') || nomor.startsWith('62')) ? nomor : ('+' + nomor);
+
+  let subject = "";
+  let bodyText = "";
+
+  if (alasan === "Opsi Permanen") {
+    subject = 'Request for Permanent WhatsApp Account Ban Review';
+    bodyText = `Dear WhatsApp Support Team,
+
+I am writing to respectfully request a manual review of my WhatsApp account, which appears to have been permanently banned.
+
+My registered phone number is: ${tampilNomor}
+
+I believe this restriction may have been applied incorrectly. I would appreciate it if your team could carefully review my account activity and determine whether the restriction was justified.
+
+I understand the importance of WhatsApp's Terms of Service and Community Guidelines. I respect the platform's policies and am willing to correct any issue if a violation occurred unintentionally.
+
+WhatsApp is an important communication platform for my daily activities. I sincerely hope my account can be reviewed and restored if it is eligible.
+
+Thank you for your time and consideration.
+
+Kind regards,
+WhatsApp User`;
+  } else if (alasan === "Tidak Bisa Login") {
+    subject = 'WhatsApp Account Login Assistance Request';
+    bodyText = `Dear WhatsApp Support Team,
+
+I am experiencing difficulties accessing my WhatsApp account and would appreciate your assistance.
+
+My registered phone number is: ${tampilNomor}
+
+I have been unable to log in successfully and would like to understand what is preventing access to my account.
+
+I kindly request guidance from your support team regarding the appropriate steps to verify my account and restore access.
+
+I am the legitimate user of this phone number and am willing to complete any required verification process through official WhatsApp channels.
+
+Thank you for your time and support. I look forward to your response.
+
+Kind regards,
+WhatsApp User
+${tampilNomor}`;
+  } else {
+    subject = 'Request for Temporary WhatsApp Restriction Review';
+    bodyText = `Dear WhatsApp Support Team,
+
+I am contacting you because my WhatsApp account appears to have been temporarily restricted.
+
+My registered phone number is: ${tampilNomor}
+
+I would like to understand the reason for this restriction and respectfully request a review of my account.
+
+If my account activity unintentionally triggered any security or policy restrictions, I sincerely apologize. I am willing to follow all applicable WhatsApp rules and take any necessary steps to resolve this issue.
+
+I kindly ask your support team to review my situation and inform me when my account may become available again.
+
+Thank you for your assistance and understanding.
+
+Kind regards,
+WhatsApp User`;
+  }
+
+  return {
+    to: 'support@support.whatsapp.com',
+    subject: subject,
+    body: bodyText
+  };
+}
+
+function buildIntentUrl(t){
+  return `intent://compose?to=${enc(t.to)}&subject=${enc(t.subject)}&body=${enc(t.body)}#Intent;scheme=mailto;package=com.google.android.gm;end`;
+}
+function buildMailtoUrl(t){
+  return `mailto:${enc(t.to)}?subject=${enc(t.subject)}&body=${enc(t.body)}`;
+}
+function buildGmailWebUrl(t){
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${enc(t.to)}&su=${enc(t.subject)}&body=${enc(t.body)}`;
+}
+
+sendBtn.addEventListener('click', () => {
+  let nomor = (nomorInput.value || '').trim();
+  const alasan = (alasanSelect.value || '').trim();
+
+  if(!nomor || !alasan){
+    setStatus('Mohon isi nomor & pilih alasan terlebih dahulu.');
+    return;
+  }
+
+  nomor = normalizeNumber(nomor);
+  const tpl = buildTemplate(nomor, alasan);
+  const intentUrl   = buildIntentUrl(tpl);
+  const mailtoUrl   = buildMailtoUrl(tpl);
+  const gmailWebUrl = buildGmailWebUrl(tpl);
+
+  sendBtn.disabled = true;
+  sendBtn.setAttribute('aria-busy', 'true');
+
+  if(isAndroid()){
+    setStatus('Mencoba membuka Gmail app...');
+    try { window.location.href = intentUrl; } catch(e){}
+
+    let handled = false;
+    const fallback = () => {
+      if(handled) return;
+      handled = true;
+      setStatus('Gagal buka Gmail app. Membuka email default...');
+      try { window.location.href = mailtoUrl; } catch(e){
+        setStatus('Gagal buka app email. Membuka Gmail web...');
+        try { window.open(gmailWebUrl, '_blank'); } catch(err){ setStatus('Gagal membuka opsi email.'); }
+      }
+      sendBtn.disabled = false;
+      sendBtn.removeAttribute('aria-busy');
+    };
+
+    const onVisChange = () => {
+      if(document.hidden){
+        handled = true;
+        setStatus('Compose terbuka di aplikasi Gmail. Silakan kirim pesannya.');
+        sendBtn.disabled = false;
+        sendBtn.removeAttribute('aria-busy');
+      }
+    };
+    document.addEventListener('visibilitychange', onVisChange, {once:true});
+    setTimeout(() => { if(!handled) fallback(); }, 1200);
+  } else {
+    setStatus('Membuka aplikasi email...');
+    try{
+      window.location.href = mailtoUrl;
+      setTimeout(() => {
+        if(!document.hidden){
+          setStatus('Jika tidak terbuka, membuka Gmail web...');
+          try{
+            const w = window.open(gmailWebUrl, '_blank');
+            if(!w) setStatus('Popup diblok. Periksa aplikasi email.');
+          } catch(e){ setStatus('Gagal membuka Gmail web.'); }
+        }
+        sendBtn.disabled = false;
+        sendBtn.removeAttribute('aria-busy');
+      }, 900);
+    } catch(err){
+      setStatus('Gagal membuka aplikasi email. Membuka Gmail web...');
+      try{ window.open(gmailWebUrl, '_blank'); } catch(e){ setStatus('Gagal membuka Gmail web.'); }
+      sendBtn.disabled = false;
+      sendBtn.removeAttribute('aria-busy');
+    }
+  }
+});
+
+/* ===== Sidebar ===== */
+document.getElementById('menuToggle').addEventListener('click', ()=>{
+  document.getElementById('sidebarMenu').classList.toggle('active');
+  document.getElementById('overlay').classList.toggle('active');
+});
+document.getElementById('overlay').addEventListener('click', ()=>{
+  document.getElementById('sidebarMenu').classList.remove('active');
+  document.getElementById('overlay').classList.remove('active');
+});
+document.getElementById('contactToggle').addEventListener('click', ()=>{
+  document.getElementById('contactSubmenu').classList.toggle('show');
+});
+document.getElementById('infoToggle').addEventListener('click', ()=>{
+  document.getElementById('infoSubmenu').classList.toggle('show');
+});
+document.getElementById('jasaToggle').addEventListener('click', ()=>{
+  document.getElementById('jasaSubmenu').classList.toggle('show');
+});
+</script>
+</body>
+</html>
